@@ -6,13 +6,11 @@ from firebase_admin import credentials, firestore
 
 app = FastAPI()
 
-# Initialize Firebase
 cred = credentials.Certificate("student-library-mngmnt-system-firebase-adminsdk-fbsvc-770b2d23a3.json")
 firebase_admin.initialize_app(cred)
 
 db = firestore.client()
 
-# Pydantic models
 class Book(BaseModel):
     id: int
     title: str
@@ -25,8 +23,7 @@ class AssignBook(BaseModel):
     book_id: int
     student_id: int
 
-# API Endpoints
-
+# Add books by post method
 @app.post("/books")
 def add_book(book: Book):
     book_ref = db.collection("Books").document(str(book.id))
@@ -36,6 +33,7 @@ def add_book(book: Book):
     book_ref.set({"title": book.title})
     return {"message": "Book added successfully"}
 
+# Read all added books by get method
 @app.get("/books")
 def get_books():
     books = {}
@@ -44,6 +42,7 @@ def get_books():
         books[int(doc.id)] = doc.to_dict()["title"]
     return books
 
+# Update book data using Put method
 @app.put("/books")
 def update_book(book: Book):
     book_ref = db.collection("Books").document(str(book.id))
@@ -53,6 +52,7 @@ def update_book(book: Book):
     book_ref.update({"title": book.title})
     return {"message": "Book updated successfully"}
 
+# Delete book data using Delete method
 @app.delete("/books/{book_id}")
 def delete_book(book_id: int):
     book_ref = db.collection("Books").document(str(book_id))
@@ -62,6 +62,7 @@ def delete_book(book_id: int):
     book_ref.delete()
     return {"message": "Book deleted successfully"}
 
+# Add student by post method
 @app.post("/students")
 def add_student(student: Student):
     student_ref = db.collection("Students").document(str(student.id))
@@ -71,6 +72,7 @@ def add_student(student: Student):
     student_ref.set({"name": student.name})
     return {"message": "Student added successfully"}
 
+# Read all added students by get method
 @app.get("/students")
 def get_students():
     students = {}
